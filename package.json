@@ -1,6 +1,7 @@
 {
-    "name": "electron-app",
+    "name": "tag-everything",
     "version": "0.1.0",
+    "author": "chenzhq",
     "private": true,
     "scripts": {
         "serve": "vue-cli-service serve",
