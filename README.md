@@ -1,21 +1,24 @@
-# electron-app
+## file 格式
 
-## Project setup
-```
-yarn install
-```
-
-### Compiles and hot-reloads for development
-```
-yarn run serve
-```
-
-### Compiles and minifies for production
-```
-yarn run build
+```javascript
+{
+    _id,
+    name,
+    path,
+    size,
+    ext,
+    times,
+    createTime,
+    updateTime,
+}
 ```
 
-### Lints and fixes files
-```
-yarn run lint
+## tag 格式
+
+```javascript
+{
+    _id,
+    name,
+    count,
+}
 ```
