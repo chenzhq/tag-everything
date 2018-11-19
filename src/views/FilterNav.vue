@@ -1,5 +1,5 @@
 <template>
-    <nav class="navbar">
+    <nav>
         <b-collapse class="card">
             <div slot="trigger"
                 slot-scope="props"

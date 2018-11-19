@@ -1,5 +1,5 @@
 <template>
-    <section>
+    <section class="box">
         <b-taginput v-model="tags"
             :data="filteredTags"
             autocomplete

@@ -1,5 +1,11 @@
 <template>
     <section>
+        <!-- <v-table is-horizontal-resize
+            style="width: 100%"
+            :columns="columns"
+            :table-data="fileList"
+            row-hover-color="#eee"
+            row-click-color="#edf7ff"></v-table> -->
         <b-table :data="fileList"
             checkable
             hoverable
@@ -34,29 +40,44 @@
                     centered>
                     {{ props.row.ext }}
                 </b-table-column>
-            </template>
-            <template slot="footer">
-                <b-pagination :total="page.count"
-                    :current="page.num"
-                    @update:current="pageChanged"
-                    order="is-centered"
-                    :per-page="page.size">
-                </b-pagination>
+                <b-table-column label="操作"
+                    width="150"
+                    centered>
+                    <div class="buttons">
+                        <b-icon custom-size="mdi-18px"
+                            icon="pencil"
+                            type="is-info"
+                            @click.native="edit(props)"></b-icon>
+                        <b-icon custom-size="mdi-18px"
+                            icon="delete"
+                            type="is-danger"></b-icon>
+                    </div>
+
+                </b-table-column>
             </template>
         </b-table>
+        <b-modal :active.sync="singleFileModalVisible">
+            <single-file-edit :name="selectedFile.name"
+                :tags="selectedFile.tags"></single-file-edit>
+        </b-modal>
     </section>
 </template>
 
 <script>
 import { mapState, mapMutations, mapActions } from 'vuex';
 
+import SingleFileEdit from '@/components/SingleFileEdit';
+
 import { CHECK_FILES } from '@/store/mutation-types';
 
 export default {
     name: 'FileTable',
+    components: { SingleFileEdit },
     data() {
         return {
             // checkedRows: [],
+            singleFileModalVisible: false,
+            selectedIndex: -1,
         };
     },
     computed: {
@@ -71,27 +92,31 @@ export default {
         checkedRowIds() {
             return this.checkedFiles.map((file) => file._id);
         },
+        selectedFile() {
+            if (this.selectedIndex === -1) {
+                return {};
+            }
+            return this.fileList[this.selectedIndex];
+        },
         ...mapState({
             checkedFiles: (state) => state.checkedFiles,
             fileList: (state) => state.fileList,
-            page: (state) => state.page,
+            // page: (state) => state.page,
         }),
     },
     methods: {
-        pageChanged(value) {
-            this.reload({ pageNum: value, clearCheck: false }).then(() => {
-                this.checkedFiles({ files: [] });
-                this.checkedFiles({ files: this.checkedRows });
-            });
-        },
         refreshCheckedRows(selectedRow, row) {
             return this.checkedRowIds.includes(row._id);
         },
+        edit({ row, index }) {
+            /* eslint-disable */
+            console.log(row);
+            /* eslint-enable */
+            this.selectedIndex = index;
+            this.singleFileModalVisible = true;
+        },
         ...mapMutations({
             checkFiles: CHECK_FILES,
-        }),
-        ...mapActions({
-            reload: 'loadDataByPage',
         }),
     },
 };
