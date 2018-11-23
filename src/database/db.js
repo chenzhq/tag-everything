@@ -1,8 +1,7 @@
 const Datastore = require('nedb');
+const fs = require('fs');
 const db = {};
-/* eslint-disable */
-console.log('db.js');
-/* eslint-enable */
+
 db.files = new Datastore({
     filename: 'files.data',
     autoload: true,
@@ -206,7 +205,7 @@ export const deleteFilesByIds = (ids) =>
         });
     });
 
-export const updateFiles = (ids, tags) =>
+export const addMultiTags = (ids, tags = []) =>
     new Promise((resolve, reject) => {
         db.files.update(
             { _id: { $in: ids } },
@@ -215,11 +214,48 @@ export const updateFiles = (ids, tags) =>
             (err, num) => {
                 if (err) return reject(err);
                 /* eslint-disable */
-                console.groupCollapsed('更新files成功');
-                console.log('更新数量', num);
+                console.groupCollapsed('多文件添加tags成功');
+                console.log('更新ids', ids);
+                console.log('添加tags', tags);
                 console.groupEnd();
                 /* eslint-enable */
                 return resolve(num);
             }
         );
+    });
+
+export const updateFileTags = (id, tags) =>
+    new Promise((resolve, reject) => {
+        db.files.update({ _id: id }, { $set: { tags } }, {}, (err, num) => {
+            if (err) return reject(err);
+            /* eslint-disable */
+            console.groupCollapsed('更新file成功');
+            console.log('更新id', id);
+            console.log('更新tags', tags);
+            console.groupEnd();
+            /* eslint-enable */
+            return resolve(num);
+        });
+    });
+
+export const updateFileName = (path, newName) =>
+    new Promise((resolve, reject) => {
+        const newPath = path.substring(0, path.lastIndexOf('/') + 1) + newName;
+        fs.rename(path, newPath, (err) => {
+            if (err) return reject(err);
+            db.files.update(
+                { path: path },
+                { $set: { name: newName, path: newPath } },
+                {},
+                (err, num) => {
+                    if (err) return reject(err);
+                    /* eslint-disable */
+                    console.groupCollapsed('重命名文件成功', path);
+                    console.log('原path', path, 'newName', newName);
+                    console.groupEnd();
+                    /* eslint-enable */
+                    return resolve(num);
+                }
+            );
+        });
     });

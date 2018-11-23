@@ -23,14 +23,17 @@ import { mapState, mapActions } from 'vuex';
 export default {
     name: 'SingleFileEdit',
     props: {
-        name: String,
-        tags: Array,
+        // id: String,
+        // name: String,
+        // tags: Array,
+        // path: String,
+        selectedFile: Object,
     },
     data() {
         return {
             formData: {
-                name: this.name,
-                tags: this.tags,
+                name: this.selectedFile.name,
+                tags: this.selectedFile.tags.slice(0),
             },
             filteredTags: [],
         };
@@ -52,7 +55,25 @@ export default {
                 );
             });
         },
-        submit() {},
+        submit() {
+            this.modifySingleFileTag({ id: this.selectedFile._id, tagNames: this.formData.tags })
+                .then(() => {
+                    if (this.selectedFile.name !== this.formData.name) {
+                        return this.modifyFileName({
+                            path: this.selectedFile.path,
+                            newName: this.formData.name,
+                        });
+                    }
+                })
+                .then(() => {
+                    this.$toast.open('修改成功');
+                    this.$emit('success');
+                });
+        },
+        ...mapActions({
+            modifyFileName: 'modifyFileName',
+            modifySingleFileTag: 'modifySingleFileTag',
+        }),
     },
 };
 </script>

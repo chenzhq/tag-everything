@@ -17,9 +17,11 @@ import {
     insertTag,
     insertTags,
     updateTag,
+    updateFileTags,
     insertFiles,
     deleteFilesByIds,
-    updateFiles,
+    addMultiTags,
+    updateFileName,
 } from '@/database/db';
 import { ADD_TAGS } from './mutation-types';
 
@@ -159,15 +161,23 @@ export default new Vuex.Store({
             deleteFilesByIds(fileIds).then((removedNum) => {});
         },
         /**
-         * 修改文件 标签
+         * 多文件 增加标签
          * 修改文件完成后，添加标签
          * @param {*} param0
          * @param {ids[], tagNames[]} param1
          */
-        modifyFiles({ dispatch }, { ids, tagNames }) {
-            return updateFiles(ids, tagNames).then((num) => {
+        addMultiTags({ dispatch }, { ids, tagNames }) {
+            return addMultiTags(ids, tagNames).then((num) => {
                 return dispatch('addTags', { tagNames });
             });
+        },
+        modifySingleFileTag({ dispatch }, { id, tagNames }) {
+            return updateFileTags(id, tagNames).then(() => {
+                return dispatch('addTags', { tagNames });
+            });
+        },
+        modifyFileName({}, { path, newName }) {
+            return updateFileName(path, newName);
         },
     },
 });

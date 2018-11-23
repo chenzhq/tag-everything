@@ -1,23 +1,28 @@
 <template>
     <section class="layout-page">
-        <div class="filter-nav container">
+        <div class="filter-nav">
             <router-view name="nav"></router-view>
         </div>
         <main>
             <header>
                 <router-view name="header"></router-view>
             </header>
-            <div class="container">
+            <div class="center-content">
                 <router-view></router-view>
             </div>
             <footer>
-                <b-pagination :total="page.count"
+                <!-- <b-pagination :total="page.count"
                     :current="page.num"
                     @update:current="pageChanged"
                     order="is-centered"
                     :per-page="page.size">
-                </b-pagination>
+                </b-pagination> -->
+                <v-pagination v-model="page.num"
+                    :length="Math.ceil(page.count / page.size)"
+                    :total-visible="7"
+                    @input="pageChanged"></v-pagination>
             </footer>
+
         </main>
     </section>
 </template>
@@ -53,30 +58,34 @@ export default {
 
 <style lang="scss">
 .layout-page {
+    width: 100%;
     display: flex;
     > .filter-nav {
-        flex: 1 3 210px;
+        flex: 1 210px;
+        // flex: 0;
+        // width: 290px;
         margin: 7px 10px 0;
     }
     > main {
-        flex: 5 1 500px;
+        flex: 5 500px;
         display: flex;
         flex-direction: column;
         margin: 0 10px;
         > header {
             flex: 0;
             margin: 7px 0;
-            height: 7vh;
+            height: 10vh;
         }
-        > .container {
-            flex: 1 80vh;
+        > .center-content {
+            flex: 1 75vh;
             width: 100%;
             overflow: scroll;
         }
         > footer {
             flex: 0;
             margin: 7px 0;
-            height: 7vh;
+            height: 10vh;
+            text-align: center;
         }
     }
 }

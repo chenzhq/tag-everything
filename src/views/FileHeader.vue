@@ -1,45 +1,61 @@
 <template>
-    <div class="level">
-        <div class="level-left">
-            <div class="level-item">
-                <button class="button"
-                    @click="editModalVisible = true">编辑</button>
-            </div>
+    <div :class="$style.container">
+        <div>
+            <v-btn @click="editModalVisible = true">编辑</v-btn>
         </div>
-        <div class="level-right">
-            <div class="level-item">
-                <!-- <button class="button is-black"
-                                @click="openDialog">打开窗口</button> -->
-                <b-dropdown :mobile-modal="false"
-                    position="is-bottom-left">
-                    <button class="button is-primary"
-                        slot="trigger">
-                        <span>添加</span>
-                        <b-icon icon="menu-down"></b-icon>
-                    </button>
-                    <b-dropdown-item value="dir"
-                        @click="addMode('dir')">添加文件夹</b-dropdown-item>
-                    <b-dropdown-item value="file"
-                        @click="addMode('file')">添加文件</b-dropdown-item>
-                </b-dropdown>
-            </div>
+        <div :class="$style.addBtn">
+            <v-menu attach
+                offset-y
+                left>
+                <v-btn slot="activator"
+                    color="primary"
+                    dark>
+                    添加
+                </v-btn>
+                <v-list>
+                    <v-list-tile @click="addMode('dir')">
+                        <v-list-tile-title>添加文件夹</v-list-tile-title>
+                    </v-list-tile>
+                    <v-list-tile @click="addMode('file')">
+                        <v-list-tile-title>添加文件</v-list-tile-title>
+                    </v-list-tile>
+                    <v-list-tile @click="addMode('traverseFile')">
+                        <v-list-tile-title>遍历文件</v-list-tile-title>
+                    </v-list-tile>
+                </v-list>
+            </v-menu>
         </div>
-        <b-modal :active.sync="editModalVisible">
+        <v-dialog v-model="editModalVisible"
+            width="400">
             <file-edit @finish="editModalVisible = false"></file-edit>
-        </b-modal>
+        </v-dialog>
+        <v-dialog v-model="addOptionModalVisible"
+            width="500">
+            <add-option></add-option>
+        </v-dialog>
+        <!-- <b-modal :active.sync="editModalVisible"
+            :width="400">
+            <file-edit @finish="editModalVisible = false"></file-edit>
+        </b-modal> -->
+        <!-- <b-modal :active.sync="addOptionModalVisible"
+            :width="500">
+            <add-option></add-option>
+        </b-modal> -->
     </div>
 </template>
 
 <script>
 const { ipcRenderer } = require('electron');
 import FileEdit from '../components/FileEdit';
+import AddOption from '../components/AddOption';
 
 export default {
     name: 'FileHeader',
-    components: { FileEdit },
+    components: { FileEdit, AddOption },
     data() {
         return {
             editModalVisible: false,
+            addOptionModalVisible: false,
         };
     },
     methods: {
@@ -48,11 +64,20 @@ export default {
                 ipcRenderer.send('open-dialog', { type: 'dir' });
             } else if (value === 'file') {
                 ipcRenderer.send('open-dialog', { type: 'file' });
+            } else if (value === 'traverseFile') {
+                this.addOptionModalVisible = true;
             }
         },
     },
 };
 </script>
 
-<style>
+<style lang="scss" module>
+.container {
+    display: flex;
+
+    .addBtn {
+        margin-left: auto;
+    }
+}
 </style>
